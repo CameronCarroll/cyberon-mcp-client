@@ -1,0 +1,9 @@
+name: cyberon-mcp-client
+version: 0.1.0
+
+authors:
+  - ieve <ievemail@proton.me>
+
+crystal: '>= 1.16.0'
+
+license: MIT
