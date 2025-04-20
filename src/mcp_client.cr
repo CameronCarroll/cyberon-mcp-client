@@ -79,7 +79,7 @@ module CyberonMCP
         @initialized = false
       end
 
-      params = {"client_info" => @client_info}
+      params = {"clientInfo" => @client_info}
       response = send_request("initialize", params)
 
       if error = response["error"]?

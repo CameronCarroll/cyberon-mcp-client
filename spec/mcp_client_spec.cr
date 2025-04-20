@@ -17,50 +17,50 @@ end
 class ClientTester
   property transport : MockTransport
   property client : CyberonMCP::Client
-  
+
   def initialize
     @transport = MockTransport.new
     @client = CyberonMCP::Client.new
     @client.set_transport(@transport)
   end
-  
+
   def reset
     @transport.reset
     @client.reset_next_id_for_tests
   end
-  
+
   def init_client_for_tests
     client_info = @client.client_info
     init_request = {jsonrpc: "2.0", id: 1, method: "initialize", params: {"clientInfo" => client_info}}.to_json
-    
+
     # Create more detailed capabilities that match what methods expect
     caps = {
       "cyberon" => {
-        "search" => true, 
-        "entity" => true,
-        "paths" => true,
-        "connections" => true,
-        "entityTypes" => true,
-        "relationshipTypes" => true
+        "search"            => true,
+        "entity"            => true,
+        "paths"             => true,
+        "connections"       => true,
+        "entityTypes"       => true,
+        "relationshipTypes" => true,
       },
       "resources" => {
-        "read" => true,
-        "list" => true,
+        "read"      => true,
+        "list"      => true,
         "templates" => {
-          "list" => true
-        }
+          "list" => true,
+        },
       },
       "prompts" => {
         "list" => true,
-        "get" => true
+        "get"  => true,
       },
       "tools" => {
-        "list" => true,
-        "schema" => true,
-        "execute" => true
-      }
+        "list"    => true,
+        "schema"  => true,
+        "execute" => true,
+      },
     }
-    
+
     init_response = json_ok_result(1, {"capabilities" => caps})
     init_notification = {jsonrpc: "2.0", method: "initialized", params: {} of String => String}.to_json
     init_notification_response = {jsonrpc: "2.0", id: nil, result: nil}.to_json
@@ -131,18 +131,18 @@ describe CyberonMCP::Client do
     end
 
     it "propagates transport errors during initialization" do
-       # Arrange
-       client_info = tester.client.client_info
-       expected_request = {jsonrpc: "2.0", id: 1, method: "initialize", params: {"clientInfo" => client_info}}.to_json
-       transport_error = IO::Error.new("Connection refused")
+      # Arrange
+      client_info = tester.client.client_info
+      expected_request = {jsonrpc: "2.0", id: 1, method: "initialize", params: {"clientInfo" => client_info}}.to_json
+      transport_error = IO::Error.new("Connection refused")
 
-       tester.transport.expect(expected_request, transport_error)
+      tester.transport.expect(expected_request, transport_error)
 
-       # Act & Assert
-       expect_raises(IO::Error, /Connection refused/) do
-         tester.client.init_connection
-       end
-       tester.client.initialized?.should eq(false)
+      # Act & Assert
+      expect_raises(IO::Error, /Connection refused/) do
+        tester.client.init_connection
+      end
+      tester.client.initialized?.should eq(false)
     end
   end
 
@@ -229,7 +229,6 @@ describe CyberonMCP::Client do
         result.should eq(JSON.parse(mock_response_payload.to_json))
       end
 
-
       it "returns error structure if server responds with error" do
         # Setup a fresh client with proper capabilities
         fresh_tester = ClientTester.new
@@ -266,128 +265,127 @@ describe CyberonMCP::Client do
     end
 
     describe "#get_entity" do
-        it "sends request and returns entity data" do
-          # Setup a fresh client with proper capabilities
-          fresh_tester = ClientTester.new
-          # Set capabilities
-          client_info = fresh_tester.client.client_info
-          init_request = {jsonrpc: "2.0", id: 1, method: "initialize", params: {"clientInfo" => client_info}}.to_json
-          caps = {"cyberon" => {"search" => true, "entity" => true}}
-          init_response = json_ok_result(1, {"capabilities" => caps})
-          init_notification = {jsonrpc: "2.0", method: "initialized", params: {} of String => String}.to_json
-          init_notification_response = {jsonrpc: "2.0", id: nil, result: nil}.to_json
+      it "sends request and returns entity data" do
+        # Setup a fresh client with proper capabilities
+        fresh_tester = ClientTester.new
+        # Set capabilities
+        client_info = fresh_tester.client.client_info
+        init_request = {jsonrpc: "2.0", id: 1, method: "initialize", params: {"clientInfo" => client_info}}.to_json
+        caps = {"cyberon" => {"search" => true, "entity" => true}}
+        init_response = json_ok_result(1, {"capabilities" => caps})
+        init_notification = {jsonrpc: "2.0", method: "initialized", params: {} of String => String}.to_json
+        init_notification_response = {jsonrpc: "2.0", id: nil, result: nil}.to_json
 
-          # First setup init requests
-          fresh_tester.transport.expect(init_request, init_response)
-          fresh_tester.transport.expect(init_notification, init_notification_response)
-          fresh_tester.client.init_connection
-          fresh_tester.client.reset_next_id_for_tests
+        # First setup init requests
+        fresh_tester.transport.expect(init_request, init_response)
+        fresh_tester.transport.expect(init_notification, init_notification_response)
+        fresh_tester.client.init_connection
+        fresh_tester.client.reset_next_id_for_tests
 
-          # Now setup the actual test requests
-          expected_request = {jsonrpc: "2.0", id: 1, method: "cyberon/entity", params: {"entityId" => "ent123"}}.to_json
-          mock_response_payload = {"id" => "ent123", "type" => "Person", "properties" => {"name" => "Alice"}}
-          mock_response = json_ok_result(1, mock_response_payload)
-          fresh_tester.transport.expect(expected_request, mock_response)
+        # Now setup the actual test requests
+        expected_request = {jsonrpc: "2.0", id: 1, method: "cyberon/entity", params: {"entityId" => "ent123"}}.to_json
+        mock_response_payload = {"id" => "ent123", "type" => "Person", "properties" => {"name" => "Alice"}}
+        mock_response = json_ok_result(1, mock_response_payload)
+        fresh_tester.transport.expect(expected_request, mock_response)
 
-          # Act
-          result = fresh_tester.client.get_entity("ent123")
+        # Act
+        result = fresh_tester.client.get_entity("ent123")
 
-          # Assert
-          result.should eq(JSON.parse(mock_response_payload.to_json))
+        # Assert
+        result.should eq(JSON.parse(mock_response_payload.to_json))
+      end
+
+      it "returns error structure on server error" do
+        # Setup a fresh client with proper capabilities
+        fresh_tester = ClientTester.new
+        # Set capabilities
+        client_info = fresh_tester.client.client_info
+        init_request = {jsonrpc: "2.0", id: 1, method: "initialize", params: {"clientInfo" => client_info}}.to_json
+        caps = {"cyberon" => {"search" => true, "entity" => true}}
+        init_response = json_ok_result(1, {"capabilities" => caps})
+        init_notification = {jsonrpc: "2.0", method: "initialized", params: {} of String => String}.to_json
+        init_notification_response = {jsonrpc: "2.0", id: nil, result: nil}.to_json
+
+        # First setup init requests
+        fresh_tester.transport.expect(init_request, init_response)
+        fresh_tester.transport.expect(init_notification, init_notification_response)
+        fresh_tester.client.init_connection
+        fresh_tester.client.reset_next_id_for_tests
+
+        # Now setup the actual test requests
+        expected_request = {jsonrpc: "2.0", id: 1, method: "cyberon/entity", params: {"entityId" => "not_found"}}.to_json
+        mock_response = json_error(1, -32002, "Entity not found")
+        fresh_tester.transport.expect(expected_request, mock_response)
+
+        # Act
+        result = fresh_tester.client.get_entity("not_found")
+
+        # Assert
+        error = result["error"]?
+        error.should_not be_nil
+        if error
+          error["message"]?.should eq("Entity not found")
         end
-
-        it "returns error structure on server error" do
-          # Setup a fresh client with proper capabilities
-          fresh_tester = ClientTester.new
-          # Set capabilities
-          client_info = fresh_tester.client.client_info
-          init_request = {jsonrpc: "2.0", id: 1, method: "initialize", params: {"clientInfo" => client_info}}.to_json
-          caps = {"cyberon" => {"search" => true, "entity" => true}}
-          init_response = json_ok_result(1, {"capabilities" => caps})
-          init_notification = {jsonrpc: "2.0", method: "initialized", params: {} of String => String}.to_json
-          init_notification_response = {jsonrpc: "2.0", id: nil, result: nil}.to_json
-
-          # First setup init requests
-          fresh_tester.transport.expect(init_request, init_response)
-          fresh_tester.transport.expect(init_notification, init_notification_response)
-          fresh_tester.client.init_connection
-          fresh_tester.client.reset_next_id_for_tests
-
-          # Now setup the actual test requests
-          expected_request = {jsonrpc: "2.0", id: 1, method: "cyberon/entity", params: {"entityId" => "not_found"}}.to_json
-          mock_response = json_error(1, -32002, "Entity not found")
-          fresh_tester.transport.expect(expected_request, mock_response)
-
-          # Act
-          result = fresh_tester.client.get_entity("not_found")
-
-          # Assert
-          error = result["error"]?
-          error.should_not be_nil
-          if error
-            error["message"]?.should eq("Entity not found")
-          end
-          result.has_key?("id").should be_false # Should only contain error
-        end
+        result.has_key?("id").should be_false # Should only contain error
+      end
     end
 
     # Add similar tests for other feature methods (find_paths, list_resources, execute_tool etc.)
     # Focus on: successful call, server error response, maybe invalid params (if client validates)
 
     describe "feature support" do
-       it "raises MCPValueError if required feature is missing" do
-          # First reinitialize with limited capabilities
-          new_tester = ClientTester.new
-          client_info = new_tester.client.client_info
-          init_request = {jsonrpc: "2.0", id: 1, method: "initialize", params: {"clientInfo" => client_info}}.to_json
-          
-          # Create capabilities without tools
-          caps = {
-            "cyberon" => { "search" => true }
-          }
-          
-          init_response = json_ok_result(1, {"capabilities" => caps})
-          init_notification = {jsonrpc: "2.0", method: "initialized", params: {} of String => String}.to_json
-          init_notification_response = {jsonrpc: "2.0", id: nil, result: nil}.to_json
-  
-          new_tester.transport.expect(init_request, init_response)
-          new_tester.transport.expect(init_notification, init_notification_response)
-          new_tester.client.init_connection
-          
-          # Now test with this limited client
-          expect_raises(MCPValueError, /Server does not support feature: 'tools'/) do
-             new_tester.client.list_tools # Requires "tools" feature
-          end
-       end
+      it "raises MCPValueError if required feature is missing" do
+        # First reinitialize with limited capabilities
+        new_tester = ClientTester.new
+        client_info = new_tester.client.client_info
+        init_request = {jsonrpc: "2.0", id: 1, method: "initialize", params: {"clientInfo" => client_info}}.to_json
 
-       it "raises MCPValueError if nested feature is missing" do
-         # First reinitialize with limited capabilities
-         new_tester = ClientTester.new
-         client_info = new_tester.client.client_info
-         init_request = {jsonrpc: "2.0", id: 1, method: "initialize", params: {"clientInfo" => client_info}}.to_json
-         
-         # Create capabilities with missing list
-         caps = {
-           "resources" => {
-             "read" => true
-           }
-         }
-         
-         init_response = json_ok_result(1, {"capabilities" => caps})
-         init_notification = {jsonrpc: "2.0", method: "initialized", params: {} of String => String}.to_json
-         init_notification_response = {jsonrpc: "2.0", id: nil, result: nil}.to_json
- 
-         new_tester.transport.expect(init_request, init_response)
-         new_tester.transport.expect(init_notification, init_notification_response)
-         new_tester.client.init_connection
-         
-         # Now test with this limited client
-         expect_raises(MCPValueError, /Server does not support feature: 'resources.list'/) do
-           new_tester.client.list_resources
-         end
-       end
+        # Create capabilities without tools
+        caps = {
+          "cyberon" => {"search" => true},
+        }
+
+        init_response = json_ok_result(1, {"capabilities" => caps})
+        init_notification = {jsonrpc: "2.0", method: "initialized", params: {} of String => String}.to_json
+        init_notification_response = {jsonrpc: "2.0", id: nil, result: nil}.to_json
+
+        new_tester.transport.expect(init_request, init_response)
+        new_tester.transport.expect(init_notification, init_notification_response)
+        new_tester.client.init_connection
+
+        # Now test with this limited client
+        expect_raises(MCPValueError, /Server does not support feature: 'tools'/) do
+          new_tester.client.list_tools # Requires "tools" feature
+        end
+      end
+
+      it "raises MCPValueError if nested feature is missing" do
+        # First reinitialize with limited capabilities
+        new_tester = ClientTester.new
+        client_info = new_tester.client.client_info
+        init_request = {jsonrpc: "2.0", id: 1, method: "initialize", params: {"clientInfo" => client_info}}.to_json
+
+        # Create capabilities with missing list
+        caps = {
+          "resources" => {
+            "read" => true,
+          },
+        }
+
+        init_response = json_ok_result(1, {"capabilities" => caps})
+        init_notification = {jsonrpc: "2.0", method: "initialized", params: {} of String => String}.to_json
+        init_notification_response = {jsonrpc: "2.0", id: nil, result: nil}.to_json
+
+        new_tester.transport.expect(init_request, init_response)
+        new_tester.transport.expect(init_notification, init_notification_response)
+        new_tester.client.init_connection
+
+        # Now test with this limited client
+        expect_raises(MCPValueError, /Server does not support feature: 'resources.list'/) do
+          new_tester.client.list_resources
+        end
+      end
     end
-
 
     describe "#shutdown" do
       it "sends shutdown request and returns true on success" do
@@ -436,6 +434,5 @@ describe CyberonMCP::Client do
         tester.client.initialized?.should eq(false)
       end
     end
-
   end # describe methods requiring initialization
 end

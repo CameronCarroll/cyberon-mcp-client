@@ -6,6 +6,7 @@ require "spec"
 require "../src/errors"
 require "../src/transport"
 require "../src/mcp_client"
+
 # Feature modules are included by mcp_client.cr, no need to require them individually here
 
 # Add a special macro to help with test expectations

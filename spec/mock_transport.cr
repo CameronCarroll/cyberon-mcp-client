@@ -34,7 +34,7 @@ class MockTransport
     if @closed
       raise IO::Error.new("MockTransport: Attempted to use closed transport")
     end
-    
+
     @received_requests << message
 
     response_or_error = @expectations[message]?
@@ -57,7 +57,7 @@ class MockTransport
   def close
     @closed = true
   end
-  
+
   # Check if close was called
   def closed?
     @closed
@@ -79,13 +79,13 @@ class MockTransport
 
   # Reset expectations and received requests between tests
   def reset
-     @expectations.clear
-     @received_requests.clear
-     @closed = false
+    @expectations.clear
+    @received_requests.clear
+    @closed = false
   end
-  
+
   # Clear only received requests but keep expectations
   def reset_received
-     @received_requests.clear
+    @received_requests.clear
   end
 end
