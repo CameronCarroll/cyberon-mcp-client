@@ -1,6 +1,6 @@
 # src/tool_processor.cr
 require "json"
-require "./mcp_client" # For CyberonMCP client integration
+require "./cyberon_mcp_client"
 
 module ToolProcessor
   # Process a tool call in  format and return the result

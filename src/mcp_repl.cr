@@ -2,7 +2,7 @@
 # src/mcp_repl.cr
 # An interactive REPL for MCP Server that allows sending arbitrary JSON-RPC commands
 
-require "./mcp_client"
+require "./cyberon_mcp_client"
 require "./transport"
 require "./errors"
 require "log"

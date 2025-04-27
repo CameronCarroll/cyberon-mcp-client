@@ -1,6 +1,6 @@
 # src/cyberon_llm_integration.cr
 require "json"
-require "./mcp_client"
+require "./cyberon_mcp_client"
 require "./transport"
 require "./_tool_processor"
 

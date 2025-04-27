@@ -5,7 +5,7 @@ require "spec"
 # Assuming you run it from the project root where 'src/' and 'spec/' reside.
 require "../src/errors"
 require "../src/transport"
-require "../src/mcp_client"
+require "../src/cyberon_mcp_client"
 
 # Feature modules are included by mcp_client.cr, no need to require them individually here
 
