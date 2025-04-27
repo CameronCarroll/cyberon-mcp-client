@@ -2,12 +2,13 @@
 require "json"
 require "log"
 
-
 require "./errors"
+require "./transport"
 
 # Namespace module
 module CyberonMCP
-  require "./transport"
+  include CyberonTransport
+
   # Feature modules will be nested in here
   module Features
   end

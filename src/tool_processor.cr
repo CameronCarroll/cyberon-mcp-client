@@ -20,27 +20,27 @@ module CyberonMCP
 
         # Process using appropriate method based on tool_name
         result = case tool_name
-                when "cyberon_search"
-                  process_search_call(arguments, client)
-                when "cyberon_entity_info"
-                  process_entity_call(arguments, client)
-                when "cyberon_find_paths"
-                  process_paths_call(arguments, client)
-                when "cyberon_find_connections"
-                  process_connections_call(arguments, client)
-                when "cyberon_entity_types"
-                  process_entity_types_call(client) # No arguments needed
-                when "cyberon_relationship_types"
-                  process_relationship_types_call(client) # No arguments needed
-                when "cyberon_list_tools"
-                  process_list_tools_call(client) # No arguments needed
-                when "cyberon_execute_tool"
-                  process_execute_tool_call(arguments, client)
-                when "cyberon_list_resources"
-                  process_list_resources_call(client) # No arguments needed
-                else
-                  {"error" => "Unknown tool: #{tool_name}"}.to_json
-                end
+                 when "cyberon_search"
+                   process_search_call(arguments, client)
+                 when "cyberon_entity_info"
+                   process_entity_call(arguments, client)
+                 when "cyberon_find_paths"
+                   process_paths_call(arguments, client)
+                 when "cyberon_find_connections"
+                   process_connections_call(arguments, client)
+                 when "cyberon_entity_types"
+                   process_entity_types_call(client) # No arguments needed
+                 when "cyberon_relationship_types"
+                   process_relationship_types_call(client) # No arguments needed
+                 when "cyberon_list_tools"
+                   process_list_tools_call(client) # No arguments needed
+                 when "cyberon_execute_tool"
+                   process_execute_tool_call(arguments, client)
+                 when "cyberon_list_resources"
+                   process_list_resources_call(client) # No arguments needed
+                 else
+                   {"error" => "Unknown tool: #{tool_name}"}.to_json
+                 end
 
         return result
       rescue key_error : KeyError
@@ -130,12 +130,12 @@ module CyberonMCP
       # Handle optional 'max_length' (Int)
       max_length_val = arguments.dig?("max_length")
       max_length = if max_length_val.is_a?(String)
-                    max_length_val.to_i? || 3
-                  elsif max_length_val.is_a?(Int)
-                    max_length_val
-                  else
-                    3
-                  end
+                     max_length_val.to_i? || 3
+                   elsif max_length_val.is_a?(Int)
+                     max_length_val
+                   else
+                     3
+                   end
 
       params = {} of String => JSON::Any
       params["source_id"] = JSON::Any.new(source_id)
@@ -157,12 +157,12 @@ module CyberonMCP
       # Handle optional 'max_distance' (Int)
       max_distance_val = arguments.dig?("max_distance")
       max_distance = if max_distance_val.is_a?(String)
-                      max_distance_val.to_i? || 2
-                    elsif max_distance_val.is_a?(Int)
-                      max_distance_val
-                    else
-                      2
-                    end
+                       max_distance_val.to_i? || 2
+                     elsif max_distance_val.is_a?(Int)
+                       max_distance_val
+                     else
+                       2
+                     end
 
       params = {} of String => JSON::Any
       params["entity_id"] = JSON::Any.new(entity_id)
