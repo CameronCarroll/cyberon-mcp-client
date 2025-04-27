@@ -149,8 +149,7 @@ begin
 
   # Check if the server script exists
   unless File.exists?(server_abs_path)
-    print_color("ERROR: Server script not found at: #{server_abs_path}", COLOR_RED)
-    print_color("Please provide a valid server path with the --server option.", COLOR_YELLOW)
+    print_color("ERROR: MCP server script not found at: #{server_abs_path}", COLOR_RED)
     exit(1)
   end
 

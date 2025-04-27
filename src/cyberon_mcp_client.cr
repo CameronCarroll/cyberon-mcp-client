@@ -1,12 +1,13 @@
-# src/mcp_client.cr
+# src/cyberon_mcp_client.cr
 require "json"
 require "log"
 
-require "./transport"
+
 require "./errors"
 
 # Namespace module
 module CyberonMCP
+  require "./transport"
   # Feature modules will be nested in here
   module Features
   end
