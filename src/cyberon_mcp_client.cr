@@ -4,6 +4,7 @@ require "log"
 
 require "./errors"
 require "./transport"
+require "./tool_processor"
 
 # Namespace module
 module CyberonMCP
